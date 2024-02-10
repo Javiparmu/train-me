@@ -33,6 +33,7 @@ export const {
 
       return true;
     },
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     async session({ session, token }: any) {
       if (token && session.user) {
         session.user.userId = token.id as string;

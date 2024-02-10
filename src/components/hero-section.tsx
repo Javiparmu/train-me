@@ -1,14 +1,17 @@
-import Link from "next/link"
+import Image from 'next/image';
+import Link from 'next/link';
 
 export function HeroSection() {
   return (
     <section className="w-full py-12 md:py-24 lg:py-32 xl:py-48">
       <div className="container px-4 md:px-6">
         <div className="grid gap-6 lg:grid-cols-[1fr_400px] lg:gap-16 xl:grid-cols-[1fr_650px]">
-          <img
+          <Image
             alt="Hero Image"
             className="mx-auto overflow-hidden rounded-xl object-bottom sm:w-full lg:order-last"
             src="/images/hero-image.png"
+            width={650}
+            height={500}
           />
           <div className="flex flex-col justify-center space-y-8">
             <div className="space-y-6">
@@ -16,8 +19,8 @@ export function HeroSection() {
                 The complete platform for building the Web
               </h1>
               <p className="max-w-[600px] text-gray-500 md:text-xl dark:text-gray-400">
-                Give your team the toolkit to stop configuring and start innovating. Securely build, deploy, and scale
-                the best web experiences.
+                Give your team the toolkit to stop configuring and start innovating. Securely build, deploy, and scale the best web
+                experiences.
               </p>
             </div>
             <div className="flex flex-col gap-2 min-[400px]:flex-row">
@@ -38,5 +41,5 @@ export function HeroSection() {
         </div>
       </div>
     </section>
-  )
+  );
 }

@@ -50,10 +50,10 @@ const SignIn = () => {
   }, [searchParams, router]);
 
   return (
-		<article className='flex items-center justify-center w-screen h-screen'>
-			<h1 className='text-2xl text-center'>Verifying token.</h1>
-			<FormResult state={state} message={message} />
-		</article>
+    <article className="flex items-center justify-center w-screen h-screen">
+      <h1 className="text-2xl text-center">Verifying token.</h1>
+      <FormResult state={state} message={message} />
+    </article>
   );
 };
 

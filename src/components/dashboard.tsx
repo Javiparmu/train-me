@@ -1,9 +1,16 @@
-import Link from "next/link"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { DropdownMenuTrigger, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuItem, DropdownMenuContent, DropdownMenu } from "@/components/ui/dropdown-menu"
-import { TableHead, TableRow, TableHeader, TableCell, TableBody, Table } from "@/components/ui/table"
-import { SVGAttributes } from "react"
+import Link from 'next/link';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import {
+  DropdownMenuTrigger,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuItem,
+  DropdownMenuContent,
+  DropdownMenu,
+} from '@/components/ui/dropdown-menu';
+import { TableHead, TableRow, TableHeader, TableCell, TableBody, Table } from '@/components/ui/table';
+import { SVGAttributes } from 'react';
 
 export function Dashboard() {
   return (
@@ -67,19 +74,15 @@ export function Dashboard() {
           </div>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button
-                className="rounded-full border border-gray-200 w-8 h-8 dark:border-gray-800"
-                size="icon"
-                variant="ghost"
-              >
+              <Button className="rounded-full border border-gray-200 w-8 h-8 dark:border-gray-800" size="icon" variant="ghost">
                 <img
                   alt="Avatar"
                   className="rounded-full"
                   height="32"
                   src="/placeholder.svg"
                   style={{
-                    aspectRatio: "32/32",
-                    objectFit: "cover",
+                    aspectRatio: '32/32',
+                    objectFit: 'cover',
                   }}
                   width="32"
                 />
@@ -150,9 +153,8 @@ export function Dashboard() {
         </main>
       </div>
     </div>
-  )
+  );
 }
-
 
 function CalendarIcon(props: SVGAttributes<SVGSVGElement>) {
   return (
@@ -173,9 +175,8 @@ function CalendarIcon(props: SVGAttributes<SVGSVGElement>) {
       <line x1="8" x2="8" y1="2" y2="6" />
       <line x1="3" x2="21" y1="10" y2="10" />
     </svg>
-  )
+  );
 }
-
 
 function BellIcon(props: SVGAttributes<SVGSVGElement>) {
   return (
@@ -194,9 +195,8 @@ function BellIcon(props: SVGAttributes<SVGSVGElement>) {
       <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9" />
       <path d="M10.3 21a1.94 1.94 0 0 0 3.4 0" />
     </svg>
-  )
+  );
 }
-
 
 function HomeIcon(props: SVGAttributes<SVGSVGElement>) {
   return (
@@ -215,9 +215,8 @@ function HomeIcon(props: SVGAttributes<SVGSVGElement>) {
       <path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
       <polyline points="9 22 9 12 15 12 15 22" />
     </svg>
-  )
+  );
 }
-
 
 function UsersIcon(props: SVGAttributes<SVGSVGElement>) {
   return (
@@ -238,9 +237,8 @@ function UsersIcon(props: SVGAttributes<SVGSVGElement>) {
       <path d="M22 21v-2a4 4 0 0 0-3-3.87" />
       <path d="M16 3.13a4 4 0 0 1 0 7.75" />
     </svg>
-  )
+  );
 }
-
 
 function SearchIcon(props: SVGAttributes<SVGSVGElement>) {
   return (
@@ -259,5 +257,5 @@ function SearchIcon(props: SVGAttributes<SVGSVGElement>) {
       <circle cx="11" cy="11" r="8" />
       <path d="m21 21-4.3-4.3" />
     </svg>
-  )
+  );
 }
