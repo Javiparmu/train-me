@@ -1,6 +1,5 @@
 import CredentialsProvider from 'next-auth/providers/credentials';
 import GoogleProvider from 'next-auth/providers/google';
-import FacebookProvider from 'next-auth/providers/facebook';
 import { InvalidRequestException } from '@/modules/Shared/domain/exception/InvalidRequestException';
 import { compare } from 'bcryptjs';
 import { getUserByEmail } from '../app/data/get-user-by-email';
