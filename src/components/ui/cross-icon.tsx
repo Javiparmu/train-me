@@ -1,8 +1,6 @@
-interface CrossIconProps {
-  color?: string;
-}
+import { SVGAttributes } from 'react';
 
-const CrossIcon = ({ color }: CrossIconProps) => {
+const CrossIcon = ({ ...props }: SVGAttributes<SVGSVGElement>) => {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
@@ -11,10 +9,10 @@ const CrossIcon = ({ color }: CrossIconProps) => {
       height="24"
       viewBox="0 0 24 24"
       strokeWidth="2"
-      stroke={color}
       fill="none"
       strokeLinecap="round"
       strokeLinejoin="round"
+      {...props}
     >
       <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
       <path d="M18 6l-12 12"></path>

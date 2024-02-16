@@ -2,7 +2,6 @@ import { User } from './User';
 import { UserSubscription } from './UserSubscription';
 import { UserEmail } from './value-object/UserEmail';
 import { UserId } from './value-object/UserId';
-import { UserIp } from './value-object/UserIp';
 
 export interface UserRepository {
   save(user: User): Promise<void>;
