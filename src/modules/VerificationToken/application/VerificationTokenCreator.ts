@@ -1,4 +1,4 @@
-import { UserEmail } from '@/modules/User/domain/value-object/UserEmail';
+import { TrainerEmail } from '@/modules/Trainer/domain/value-object/TrainerEmail';
 import { VerificationToken } from '../domain/VerificationToken';
 import { VerificationTokenRepository } from '../domain/VerificationTokenRepository';
 import { Primitives } from '@/modules/Shared/domain/Primitives';
@@ -17,7 +17,7 @@ export class VerificationTokenCreator {
     await this.repository.save(
       new VerificationToken({
         id: new VerificationTokenId(verificationToken.id),
-        email: new UserEmail(verificationToken.email),
+        email: new TrainerEmail(verificationToken.email),
         token: new Token(verificationToken.token),
         expiresAt: new UnixDate(verificationToken.expiresAt),
       }),

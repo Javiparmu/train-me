@@ -6,13 +6,13 @@ import { PlanEnum, getPlanId, getPlanPaymentUrl } from '@/app/utils';
 import { headers } from 'next/headers';
 
 export const paymentSession = async (plan: PlanEnum, email?: string): Promise<void> => {
-  const userEmail = email ?? (await auth())?.user.email;
+  const trainerEmail = email ?? (await auth())?.trainer.email;
 
-  if (!userEmail) {
+  if (!trainerEmail) {
     redirect(`${headers().get('origin')}/auth/signin`);
   }
 
-  const customer = await stripe.customers.list({ email: userEmail });
+  const customer = await stripe.customers.list({ email: trainerEmail });
 
   if (customer.data.length === 0) {
     const checkoutSession = await stripe.checkout.sessions.create({
@@ -23,12 +23,12 @@ export const paymentSession = async (plan: PlanEnum, email?: string): Promise<vo
           price: getPlanId(plan),
         },
       ],
-      customer_email: userEmail,
+      customer_email: trainerEmail,
       success_url: `${headers().get('origin')}/checkout/result?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${headers().get('origin')}/checkout/result`,
     });
 
-    redirect(checkoutSession.url ?? getPlanPaymentUrl(plan) + '?prefilled_email=' + userEmail);
+    redirect(checkoutSession.url ?? getPlanPaymentUrl(plan) + '?prefilled_email=' + trainerEmail);
   }
 
   const paymentSession = await stripe.billingPortal.sessions.create({

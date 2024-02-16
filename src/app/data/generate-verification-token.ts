@@ -4,10 +4,10 @@ import { VerificationTokenFinder } from '@/modules/VerificationToken/application
 import { MongoVerificationTokenRepository } from '@/modules/VerificationToken/infrastructure/persistence/MongoVerificationTokenRepository';
 import { randomUUID } from 'crypto';
 import { sendVerificationEmail } from '../../lib';
-import { UserCreator } from '@/modules/User/application/UserCreator';
-import { MongoUserRepository } from '@/modules/User/infrastructure/persistence/MongoUserRepository';
+import { TrainerCreator } from '@/modules/Trainer/application/TrainerCreator';
+import { MongoTrainerRepository } from '@/modules/Trainer/infrastructure/persistence/MongoTrainerRepository';
 import { hash } from 'bcryptjs';
-import { UserFinder } from '@/modules/User/application/UserFinder';
+import { TrainerFinder } from '@/modules/Trainer/application/TrainerFinder';
 
 export const generateVerificationToken = async (email: string, password: string) => {
   const tokenFinder = new VerificationTokenFinder(new MongoVerificationTokenRepository());
@@ -30,12 +30,12 @@ export const generateVerificationToken = async (email: string, password: string)
 
   const hashedPassword = await hash(password, 10);
 
-  const userFinder = new UserFinder(new MongoUserRepository());
-  const user = await userFinder.run(email);
+  const trainerFinder = new TrainerFinder(new MongoTrainerRepository());
+  const trainer = await trainerFinder.run(email);
 
-  const userCreator = new UserCreator(new MongoUserRepository());
-  await userCreator.run({
-    id: user ? user.id.value : randomUUID(),
+  const trainerCreator = new TrainerCreator(new MongoTrainerRepository());
+  await trainerCreator.run({
+    id: trainer ? trainer.id.value : randomUUID(),
     email,
     password: hashedPassword,
     authProvider: 'credentials',

@@ -1,25 +1,25 @@
-import { ValidUserSubscriptionFinder } from '@/modules/User/application/ValidUserSubscriptionFinder';
-import { MongoUserSubscriptionRepository } from '@/modules/User/infrastructure/persistence/MongoUserSubscriptionRepository';
+import { ValidTrainerSubscriptionFinder } from '@/modules/Trainer/application/ValidTrainerSubscriptionFinder';
+import { MongoTrainerSubscriptionRepository } from '@/modules/Trainer/infrastructure/persistence/MongoTrainerSubscriptionRepository';
 
 interface Subscription {
   plan: string;
-  userId: string;
+  trainerId: string;
 }
 
-export const checkSubscription = async (userId?: string): Promise<Subscription | null> => {
-  if (!userId) {
+export const checkSubscription = async (trainerId?: string): Promise<Subscription | null> => {
+  if (!trainerId) {
     return null;
   }
 
-  const userSubscriptionFinder = new ValidUserSubscriptionFinder(new MongoUserSubscriptionRepository());
-  const userSubscription = await userSubscriptionFinder.run(userId);
+  const trainerSubscriptionFinder = new ValidTrainerSubscriptionFinder(new MongoTrainerSubscriptionRepository());
+  const trainerSubscription = await trainerSubscriptionFinder.run(trainerId);
 
-  if (!userSubscription) {
+  if (!trainerSubscription) {
     return null;
   }
 
   return {
-    plan: userSubscription.id.value,
-    userId: userSubscription.userId!.value,
+    plan: trainerSubscription.id.value,
+    trainerId: trainerSubscription.trainerId!.value,
   };
 };

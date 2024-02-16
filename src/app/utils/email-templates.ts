@@ -1,6 +1,6 @@
 import { PlanEnum } from './enums';
 
-export const registrationEmailTemplate = (username: string): string => `
+export const registrationEmailTemplate = (trainername: string): string => `
     <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
     <meta http-equiv="Content-Type" content="text/html charset=UTF-8" />
     <html lang="en">
@@ -11,7 +11,7 @@ export const registrationEmailTemplate = (username: string): string => `
         <table align="center" role="presentation" cellSpacing="0" cellPadding="0" border="0" width="100%" style="max-width:37.5em;margin:0 auto;padding:20px 0 48px">
           <tr style="width:100%">
             <td><img alt="Koala" src="https://i.ibb.co/3RkbRCD/logo-blue.png" width="100" height="100" style="display:block;outline:none;border:none;text-decoration:none;margin:0 auto" />
-              <p style="font-size:16px;line-height:26px;margin:16px 0">Hi ${username},</p>
+              <p style="font-size:16px;line-height:26px;margin:16px 0">Hi ${trainername},</p>
               <p style="font-size:16px;line-height:26px;margin:16px 0">Welcome to Brain Stack, the universal Hub for AI generations. You can try it for free right now!</p>
                 <table style="text-align:center" align="center" border="0" cellPadding="0" cellSpacing="0" role="presentation" width="100%">
                   <tbody>
@@ -29,7 +29,7 @@ export const registrationEmailTemplate = (username: string): string => `
     </html>
 `;
 
-export const subscriptionEmailTemplate = (username: string, plan: PlanEnum): string => `
+export const subscriptionEmailTemplate = (trainername: string, plan: PlanEnum): string => `
   <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
   <meta http-equiv="Content-Type" content="text/html charset=UTF-8" />
   <html lang="en">
@@ -55,7 +55,7 @@ export const subscriptionEmailTemplate = (username: string, plan: PlanEnum): str
                       <tbody style="width:100%">
                         <tr style="width:100%">
                           <td>
-                            <h1 style="font-size:32px;font-weight:bold;text-align:center">Hi ${username},</h1>
+                            <h1 style="font-size:32px;font-weight:bold;text-align:center">Hi ${trainername},</h1>
                             <h2 style="font-size:26px;font-weight:bold;text-align:center">Thank you for subscribing to the ${plan} plan!</h2>
                             <p style="font-size:16px;line-height:24px;margin:16px 0">You can try all of our tools in our dashboard.</p>
                             <p style="font-size:16px;line-height:24px;margin:16px 0;margin-top:-5px">Hope you have a nice experience using the hub!</p>
@@ -81,7 +81,7 @@ export const subscriptionEmailTemplate = (username: string, plan: PlanEnum): str
   </html>
 `;
 
-export const subscriptionUpdatedEmailTemplate = (username: string, plan: PlanEnum): string => `
+export const subscriptionUpdatedEmailTemplate = (trainername: string, plan: PlanEnum): string => `
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
   <meta http-equiv="Content-Type" content="text/html charset=UTF-8" />
   <html lang="en">
@@ -107,7 +107,7 @@ export const subscriptionUpdatedEmailTemplate = (username: string, plan: PlanEnu
                       <tbody style="width:100%">
                         <tr style="width:100%">
                           <td>
-                            <h1 style="font-size:32px;font-weight:bold;text-align:center">Hi ${username},</h1>
+                            <h1 style="font-size:32px;font-weight:bold;text-align:center">Hi ${trainername},</h1>
                             <h2 style="font-size:26px;font-weight:bold;text-align:center">Your subscription plan has been updated to the ${plan} plan!</h2>
                             <p style="font-size:16px;line-height:24px;margin:16px 0">Your new plan will be active on the next billing cycle. Enjoy your new features.</p>
                             <p style="font-size:16px;line-height:24px;margin:16px 0">You can try all of our tools in our dashboard.</p>

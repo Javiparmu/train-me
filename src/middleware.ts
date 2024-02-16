@@ -2,16 +2,16 @@ import { DEFAULT_LOGIN_REDIRECT, apiAuthPrefix, authRoutes, publicRoutes } from 
 import NextAuth from 'next-auth';
 import { NextRequest, NextResponse } from 'next/server';
 
-const getUserIp = (req: NextRequest) => {
-  let userIp = req.ip ?? req.headers.get('x-real-ip');
+const getTrainerIp = (req: NextRequest) => {
+  let trainerIp = req.ip ?? req.headers.get('x-real-ip');
 
   const forwardedFor = req.headers.get('x-forwarded-for');
 
-  if (!userIp && forwardedFor) {
-    userIp = forwardedFor.split(',').at(0) ?? 'Unknown';
+  if (!trainerIp && forwardedFor) {
+    trainerIp = forwardedFor.split(',').at(0) ?? 'Unknown';
   }
 
-  return userIp ?? 'Unknown';
+  return trainerIp ?? 'Unknown';
 };
 
 const { auth } = NextAuth({
@@ -50,10 +50,10 @@ export default auth((req: any) => {
   }
 
   const response = NextResponse.next();
-  const userIp = getUserIp(req);
+  const trainerIp = getTrainerIp(req);
 
-  if (userIp !== 'Unknown') {
-    response.cookies.set('user-ip', userIp, {
+  if (trainerIp !== 'Unknown') {
+    response.cookies.set('trainer-ip', trainerIp, {
       httpOnly: false,
     });
   }

@@ -6,7 +6,7 @@ import { VerificationTokenId } from '../../domain/value-object/VerificationToken
 import VerificationTokenModel from '@/modules/VerificationToken/infrastructure/persistence/mongoose/VerificationToken';
 import { MongooseConnection } from '@/modules/Shared/infrastructure/persistence/MongooseConnection';
 import { VerificationTokenDocument } from './mongoose/documents';
-import { UserEmail } from '@/modules/User/domain/value-object/UserEmail';
+import { TrainerEmail } from '@/modules/Trainer/domain/value-object/TrainerEmail';
 
 export class MongoVerificationTokenRepository extends MongoRepository<VerificationToken> implements VerificationTokenRepository {
   constructor() {
@@ -25,7 +25,7 @@ export class MongoVerificationTokenRepository extends MongoRepository<Verificati
     return verificationToken ? VerificationToken.fromPrimitives({ ...verificationToken, id: verificationToken._id }) : null;
   }
 
-  async findByEmail(email: UserEmail): Promise<VerificationToken | null> {
+  async findByEmail(email: TrainerEmail): Promise<VerificationToken | null> {
     await MongooseConnection.connect({ url: process.env.MONGODB_URI ?? '' });
 
     const verificationToken = await VerificationTokenModel.findOne({ email }).lean<VerificationTokenDocument>();

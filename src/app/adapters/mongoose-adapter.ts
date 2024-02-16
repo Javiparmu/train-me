@@ -1,9 +1,9 @@
 import { MongooseConnection } from '@/modules/Shared/infrastructure/persistence/MongooseConnection';
-import { UserCreator } from '@/modules/User/application/UserCreator';
-import { UserDeleter } from '@/modules/User/application/UserDeleter';
-import { UserFinder } from '@/modules/User/application/UserFinder';
-import { AuthProvider } from '@/modules/User/domain/value-object/UserAuthProvider';
-import { MongoUserRepository } from '@/modules/User/infrastructure/persistence/MongoUserRepository';
+import { TrainerCreator } from '@/modules/Trainer/application/TrainerCreator';
+import { TrainerDeleter } from '@/modules/Trainer/application/TrainerDeleter';
+import { TrainerFinder } from '@/modules/Trainer/application/TrainerFinder';
+import { AuthProvider } from '@/modules/Trainer/domain/value-object/TrainerAuthProvider';
+import { MongoTrainerRepository } from '@/modules/Trainer/infrastructure/persistence/MongoTrainerRepository';
 import { VerificationTokenCreator } from '@/modules/VerificationToken/application/VerificationTokenCreator';
 import { VerificationTokenDeleter } from '@/modules/VerificationToken/application/VerificationTokenDeleter';
 import { VerificationTokenFinder } from '@/modules/VerificationToken/application/VerificationTokenFinder';
@@ -15,20 +15,20 @@ type Awaitable<T> = T | PromiseLike<T>;
 
 type ProviderType = 'oidc' | 'oauth' | 'email' | 'credentials';
 
-interface AdapterUser extends User {
+interface AdapterTrainer extends User {
   id: string;
   email: string;
   emailVerified: Date | null;
 }
 
 interface AdapterAccount extends Account {
-  userId: string;
+  trainerId: string;
   type: Extract<ProviderType, 'oauth' | 'oidc' | 'email'>;
 }
 
 interface AdapterSession {
   sessionToken: string;
-  userId: string;
+  trainerId: string;
   expires: Date;
 }
 
@@ -39,18 +39,18 @@ interface VerificationToken {
 }
 
 interface Adapter {
-  createUser?(user: AdapterUser): Awaitable<AdapterUser>;
-  getUser?(id: string): Awaitable<AdapterUser | null>;
-  getUserByEmail?(email: string): Awaitable<AdapterUser | null>;
-  getUserByAccount?(providerAccountId: Pick<AdapterAccount, 'provider' | 'providerAccountId'>): Awaitable<AdapterUser | null>;
-  updateUser?(user: Partial<AdapterUser> & Pick<AdapterUser, 'id'>): Awaitable<AdapterUser>;
-  deleteUser?(userId: string): Promise<void> | Awaitable<AdapterUser | null | undefined>;
+  createTrainer?(trainer: AdapterTrainer): Awaitable<AdapterTrainer>;
+  getTrainer?(id: string): Awaitable<AdapterTrainer | null>;
+  getTrainerByEmail?(email: string): Awaitable<AdapterTrainer | null>;
+  getTrainerByAccount?(providerAccountId: Pick<AdapterAccount, 'provider' | 'providerAccountId'>): Awaitable<AdapterTrainer | null>;
+  updateTrainer?(trainer: Partial<AdapterTrainer> & Pick<AdapterTrainer, 'id'>): Awaitable<AdapterTrainer>;
+  deleteTrainer?(trainerId: string): Promise<void> | Awaitable<AdapterTrainer | null | undefined>;
   linkAccount?(account: AdapterAccount): Promise<void> | Awaitable<AdapterAccount | null | undefined>;
   unlinkAccount?(
     providerAccountId: Pick<AdapterAccount, 'provider' | 'providerAccountId'>,
   ): Promise<void> | Awaitable<AdapterAccount | undefined>;
-  createSession?(session: { sessionToken: string; userId: string; expires: Date }): Awaitable<AdapterSession>;
-  getSessionAndUser?(sessionToken: string): Awaitable<{ session: AdapterSession; user: AdapterUser } | null>;
+  createSession?(session: { sessionToken: string; trainerId: string; expires: Date }): Awaitable<AdapterSession>;
+  getSessionAndTrainer?(sessionToken: string): Awaitable<{ session: AdapterSession; trainer: AdapterTrainer } | null>;
   updateSession?(session: Partial<AdapterSession> & Pick<AdapterSession, 'sessionToken'>): Awaitable<AdapterSession | null | undefined>;
   deleteSession?(sessionToken: string): Promise<void> | Awaitable<AdapterSession | null | undefined>;
   createVerificationToken?(verificationToken: VerificationToken): Awaitable<VerificationToken | null | undefined>;
@@ -74,73 +74,73 @@ declare module 'next-auth/adapters' {
 
 export function MongooseAdapter(): Adapter {
   return {
-    async createUser({ id, email, emailVerified }) {
+    async createTrainer({ id, email, emailVerified }) {
       await MongooseConnection.connect();
 
-      console.log('Creating user', id, email, emailVerified);
+      console.log('Creating trainer', id, email, emailVerified);
 
-      const userId = randomUUID();
+      const trainerId = randomUUID();
 
-      const userCreator = new UserCreator(new MongoUserRepository());
-      await userCreator.run({
-        id: userId,
+      const trainerCreator = new TrainerCreator(new MongoTrainerRepository());
+      await trainerCreator.run({
+        id: trainerId,
         email,
         emailVerified: emailVerified ? emailVerified.getTime() : undefined,
       });
 
       return {
-        id: userId,
+        id: trainerId,
         email,
         emailVerified: emailVerified,
       };
     },
-    async getUser(id) {
+    async getTrainer(id) {
       await MongooseConnection.connect();
 
-      const userFinder = new UserFinder(new MongoUserRepository());
-      const user = await userFinder.runById(id);
+      const trainerFinder = new TrainerFinder(new MongoTrainerRepository());
+      const trainer = await trainerFinder.runById(id);
 
-      if (!user) return null;
+      if (!trainer) return null;
 
       return {
-        id: user.id.value,
-        email: user.email?.value ?? '',
-        emailVerified: new Date(user.emailVerified?.value ?? 0),
+        id: trainer.id.value,
+        email: trainer.email?.value ?? '',
+        emailVerified: new Date(trainer.emailVerified?.value ?? 0),
       };
     },
-    async getUserByEmail(email) {
+    async getTrainerByEmail(email) {
       await MongooseConnection.connect();
 
-      const userFinder = new UserFinder(new MongoUserRepository());
-      const user = await userFinder.run(email);
+      const trainerFinder = new TrainerFinder(new MongoTrainerRepository());
+      const trainer = await trainerFinder.run(email);
 
-      if (!user) return null;
+      if (!trainer) return null;
 
       return {
-        id: user.id.value,
-        email: user.email?.value ?? '',
-        emailVerified: new Date(user.emailVerified?.value ?? 0),
+        id: trainer.id.value,
+        email: trainer.email?.value ?? '',
+        emailVerified: new Date(trainer.emailVerified?.value ?? 0),
       };
     },
-    async getUserByAccount(data) {
+    async getTrainerByAccount(data) {
       await MongooseConnection.connect();
 
-      const userFinder = new UserFinder(new MongoUserRepository());
-      const user = await userFinder.runByProviderAccountId(data.providerAccountId);
+      const trainerFinder = new TrainerFinder(new MongoTrainerRepository());
+      const trainer = await trainerFinder.runByProviderAccountId(data.providerAccountId);
 
-      if (!user) return null;
+      if (!trainer) return null;
 
       return {
-        id: user.id.value,
-        email: user.email?.value ?? '',
-        emailVerified: new Date(user.emailVerified?.value ?? 0),
+        id: trainer.id.value,
+        email: trainer.email?.value ?? '',
+        emailVerified: new Date(trainer.emailVerified?.value ?? 0),
       };
     },
-    async updateUser(data) {
+    async updateTrainer(data) {
       await MongooseConnection.connect();
 
-      const userCreator = new UserCreator(new MongoUserRepository());
-      await userCreator.run({
+      const trainerCreator = new TrainerCreator(new MongoTrainerRepository());
+      await trainerCreator.run({
         id: data.id,
         email: data.email,
         emailVerified: data.emailVerified?.getTime(),
@@ -152,18 +152,18 @@ export function MongooseAdapter(): Adapter {
         emailVerified: new Date(data.emailVerified ?? 0),
       };
     },
-    async deleteUser(id) {
+    async deleteTrainer(id) {
       await MongooseConnection.connect();
 
-      const userCreator = new UserDeleter(new MongoUserRepository());
-      await userCreator.run(id);
+      const trainerCreator = new TrainerDeleter(new MongoTrainerRepository());
+      await trainerCreator.run(id);
     },
     linkAccount: async (data) => {
       await MongooseConnection.connect();
 
-      const userCreator = new UserCreator(new MongoUserRepository());
-      await userCreator.run({
-        id: data.userId,
+      const trainerCreator = new TrainerCreator(new MongoTrainerRepository());
+      await trainerCreator.run({
+        id: data.trainerId,
         email: data.email?.toString(),
         emailVerified: new Date().getTime(),
         authProvider: data.provider as AuthProvider,
@@ -173,21 +173,21 @@ export function MongooseAdapter(): Adapter {
     async unlinkAccount() {
       return;
     },
-    async getSessionAndUser(sessionToken) {
+    async getSessionAndTrainer(sessionToken) {
       await MongooseConnection.connect();
 
-      const userFinder = new UserFinder(new MongoUserRepository());
-      const user = await userFinder.runById(sessionToken);
+      const trainerFinder = new TrainerFinder(new MongoTrainerRepository());
+      const trainer = await trainerFinder.runById(sessionToken);
 
       return {
-        user: {
-          id: user?.id.value ?? '',
-          email: user?.email?.value ?? '',
-          emailVerified: new Date(user?.emailVerified?.value ?? 0),
+        trainer: {
+          id: trainer?.id.value ?? '',
+          email: trainer?.email?.value ?? '',
+          emailVerified: new Date(trainer?.emailVerified?.value ?? 0),
         },
         session: {
           sessionToken,
-          userId: user?.id.value ?? '',
+          trainerId: trainer?.id.value ?? '',
           expires: new Date(),
         },
       };

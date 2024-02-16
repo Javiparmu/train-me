@@ -52,7 +52,7 @@ export const pricingData = {
   premium: {
     name: PlanEnum.PREMIUM,
     title: 'Premium',
-    subtitle: 'For demanding users requiring comprehensive AI tools and support.',
+    subtitle: 'For demanding trainers requiring comprehensive AI tools and support.',
     features: [
       {
         available: true,

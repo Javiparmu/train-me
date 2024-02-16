@@ -1,5 +1,5 @@
 import { UnixDate } from '@/modules/Shared/domain/value-object/UnixDate';
-import { UserEmail } from '@/modules/User/domain/value-object/UserEmail';
+import { TrainerEmail } from '@/modules/Trainer/domain/value-object/TrainerEmail';
 import { Token } from '@/modules/VerificationToken/domain/value-object/Token';
 import { VerificationTokenId } from '@/modules/VerificationToken/domain/value-object/VerificationTokenId';
 import { Schema, model, models } from 'mongoose';
@@ -16,8 +16,8 @@ const verificationTokenSchema = new Schema(
     email: {
       type: String,
       required: true,
-      get: (email: string) => new UserEmail(email),
-      set: (email: UserEmail) => email.value,
+      get: (email: string) => new TrainerEmail(email),
+      set: (email: TrainerEmail) => email.value,
     },
     token: {
       type: String,

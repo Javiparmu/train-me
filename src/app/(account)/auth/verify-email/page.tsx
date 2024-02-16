@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import FormResult from '@/components/auth/form-result';
-import { verifyUser } from '@/app/actions/verify-user';
+import { verifyTrainer } from '@/app/actions/verify-trainer';
 import { FormState } from '@/app/utils';
 
 const SignIn = () => {
@@ -25,7 +25,7 @@ const SignIn = () => {
     }
 
     try {
-      const data = await verifyUser(token);
+      const data = await verifyTrainer(token);
 
       if (data.error) {
         setState(FormState.ERROR);

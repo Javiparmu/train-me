@@ -3,7 +3,7 @@ import GoogleProvider from 'next-auth/providers/google';
 import GithubProvider from 'next-auth/providers/github';
 import { InvalidRequestException } from '@/modules/Shared/domain/exception/InvalidRequestException';
 import { compare } from 'bcryptjs';
-import { getUserByEmail } from '../app/data/get-user-by-email';
+import { getTrainerByEmail } from '../app/data/get-trainer-by-email';
 
 const authConfig = {
   providers: [
@@ -16,15 +16,15 @@ const authConfig = {
             throw new InvalidRequestException('Invalid credentials');
           }
 
-          const user = await getUserByEmail(email);
+          const trainer = await getTrainerByEmail(email);
 
-          if (!user) return null;
+          if (!trainer) return null;
 
-          const isValidPassword = await compare(password, user.password!.value);
+          const isValidPassword = await compare(password, trainer.password!.value);
 
           if (!isValidPassword) return null;
 
-          return user.toPrimitives();
+          return trainer.toPrimitives();
         } catch (error) {
           return null;
         }

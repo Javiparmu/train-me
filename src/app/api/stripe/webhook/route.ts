@@ -13,11 +13,11 @@ import { MongoInvoiceRepository } from '@/modules/Invoice/infrastructure/persist
 import { SubscriptionCreator } from '@/modules/Subscription/application/SubscriptionCreator';
 import { SubscriptionDeleter } from '@/modules/Subscription/application/SubscriptionDeleter';
 import { MongoSubscriptionRepository } from '@/modules/Subscription/infrastructure/persistence/MongoSubscriptionRepository';
-import { UserCreator } from '@/modules/User/application/UserCreator';
-import { UserFinder } from '@/modules/User/application/UserFinder';
-import { UserSubscriptionCreator } from '@/modules/User/application/UserSubscriptionCreator';
-import { MongoUserRepository } from '@/modules/User/infrastructure/persistence/MongoUserRepository';
-import { MongoUserSubscriptionRepository } from '@/modules/User/infrastructure/persistence/MongoUserSubscriptionRepository';
+import { TrainerCreator } from '@/modules/Trainer/application/TrainerCreator';
+import { TrainerFinder } from '@/modules/Trainer/application/TrainerFinder';
+import { TrainerSubscriptionCreator } from '@/modules/Trainer/application/TrainerSubscriptionCreator';
+import { MongoTrainerRepository } from '@/modules/Trainer/infrastructure/persistence/MongoTrainerRepository';
+import { MongoTrainerSubscriptionRepository } from '@/modules/Trainer/infrastructure/persistence/MongoTrainerSubscriptionRepository';
 import { randomUUID } from 'crypto';
 import { NextRequest, NextResponse } from 'next/server';
 
@@ -46,15 +46,15 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
       const customerCreator = new CustomerCreator(new MongoCustomerRepository());
       await customerCreator.run(createCustomerAdapter(customerCreated));
 
-      const userFinder = new UserFinder(new MongoUserRepository());
-      const user = await userFinder.run(customerCreated.email!);
+      const trainerFinder = new TrainerFinder(new MongoTrainerRepository());
+      const trainer = await trainerFinder.run(customerCreated.email!);
 
-      const userCreator = new UserCreator(new MongoUserRepository());
-      await userCreator.run({
-        id: user?.id.value ?? randomUUID(),
+      const trainerCreator = new TrainerCreator(new MongoTrainerRepository());
+      await trainerCreator.run({
+        id: trainer?.id.value ?? randomUUID(),
         email: customerCreated.email?.toString(),
         customerId: customerCreated.id,
-        authProvider: !user ? 'customer' : undefined,
+        authProvider: !trainer ? 'customer' : undefined,
       });
 
       break;
@@ -92,8 +92,8 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
       const subscriptionUpdater = new SubscriptionCreator(new MongoSubscriptionRepository());
       await subscriptionUpdater.run(createSubscriptionAdapter(subscriptionUpdated));
 
-      const userSubscriptionCreator = new UserSubscriptionCreator(new MongoUserSubscriptionRepository());
-      await userSubscriptionCreator.run({
+      const trainerSubscriptionCreator = new TrainerSubscriptionCreator(new MongoTrainerSubscriptionRepository());
+      await trainerSubscriptionCreator.run({
         id: subscriptionUpdated.id,
         stripeCurrentPeriodEnd: subscriptionUpdated.current_period_end * 1000,
         stripePriceId: subscriptionUpdated.items.data[0].price.id,

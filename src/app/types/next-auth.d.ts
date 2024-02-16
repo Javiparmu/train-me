@@ -3,8 +3,8 @@ import NextAuth from 'next-auth';
 
 declare module 'next-auth' {
   interface Session extends DefaultSession {
-    user: {
-      userId: string;
+    trainer: {
+      trainerId: string;
       email: string;
       plan: string;
     };
