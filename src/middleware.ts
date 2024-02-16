@@ -1,18 +1,5 @@
 import { DEFAULT_LOGIN_REDIRECT, apiAuthPrefix, authRoutes, publicRoutes } from '@/app/routes';
 import NextAuth from 'next-auth';
-import { NextRequest, NextResponse } from 'next/server';
-
-const getTrainerIp = (req: NextRequest) => {
-  let trainerIp = req.ip ?? req.headers.get('x-real-ip');
-
-  const forwardedFor = req.headers.get('x-forwarded-for');
-
-  if (!trainerIp && forwardedFor) {
-    trainerIp = forwardedFor.split(',').at(0) ?? 'Unknown';
-  }
-
-  return trainerIp ?? 'Unknown';
-};
 
 const { auth } = NextAuth({
   providers: [],
@@ -35,6 +22,7 @@ export default auth((req: any) => {
     if (isLoggedIn) {
       return Response.redirect(new URL(DEFAULT_LOGIN_REDIRECT, nextUrl));
     }
+
     return null;
   }
 
@@ -49,16 +37,7 @@ export default auth((req: any) => {
     return Response.redirect(new URL(`/auth/signin?callbackUrl=${encodedCallbackUrl}`, nextUrl));
   }
 
-  const response = NextResponse.next();
-  const trainerIp = getTrainerIp(req);
-
-  if (trainerIp !== 'Unknown') {
-    response.cookies.set('trainer-ip', trainerIp, {
-      httpOnly: false,
-    });
-  }
-
-  return response;
+  return null;
 });
 
 export const config = {

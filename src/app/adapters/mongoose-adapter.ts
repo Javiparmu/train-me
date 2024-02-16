@@ -4,10 +4,6 @@ import { TrainerDeleter } from '@/modules/Trainer/application/TrainerDeleter';
 import { TrainerFinder } from '@/modules/Trainer/application/TrainerFinder';
 import { AuthProvider } from '@/modules/Trainer/domain/value-object/TrainerAuthProvider';
 import { MongoTrainerRepository } from '@/modules/Trainer/infrastructure/persistence/MongoTrainerRepository';
-import { VerificationTokenCreator } from '@/modules/VerificationToken/application/VerificationTokenCreator';
-import { VerificationTokenDeleter } from '@/modules/VerificationToken/application/VerificationTokenDeleter';
-import { VerificationTokenFinder } from '@/modules/VerificationToken/application/VerificationTokenFinder';
-import { MongoVerificationTokenRepository } from '@/modules/VerificationToken/infrastructure/persistence/MongoVerificationTokenRepository';
 import { Account, User } from 'next-auth';
 import { randomUUID } from 'crypto';
 
@@ -200,39 +196,6 @@ export function MongooseAdapter(): Adapter {
     },
     async deleteSession() {
       return null;
-    },
-    async createVerificationToken(data) {
-      await MongooseConnection.connect();
-
-      const tokenCreator = new VerificationTokenCreator(new MongoVerificationTokenRepository());
-      await tokenCreator.run({
-        id: data.identifier,
-        email: 'oauth@email.com',
-        token: data.token,
-        expiresAt: data.expires.getTime(),
-      });
-
-      return data;
-    },
-    async useVerificationToken(identifier_token) {
-      await MongooseConnection.connect();
-
-      const tokenFinder = new VerificationTokenFinder(new MongoVerificationTokenRepository());
-      const verificationToken = await tokenFinder.runByToken(identifier_token.identifier);
-
-      if (!verificationToken) return null;
-
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      const { id, ...rest } = verificationToken;
-
-      const tokenDeleter = new VerificationTokenDeleter(new MongoVerificationTokenRepository());
-      await tokenDeleter.run(verificationToken.id.value);
-
-      return {
-        identifier: verificationToken.id.value,
-        token: verificationToken.token.value,
-        expires: new Date(verificationToken.expiresAt.value),
-      };
     },
   };
 }
