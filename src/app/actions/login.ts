@@ -1,7 +1,6 @@
 'use server';
 
 import { signIn } from '@/lib';
-import { generateVerificationToken } from '../data/generate-verification-token';
 import { AuthError } from 'next-auth';
 import { UserFinder } from '@/modules/User/application/UserFinder';
 import { MongoUserRepository } from '@/modules/User/infrastructure/persistence/MongoUserRepository';
@@ -11,11 +10,9 @@ export const login = async (email: string, password: string, callbackUrl: string
   const userFinder = new UserFinder(new MongoUserRepository());
   const user = await userFinder.run(email);
 
-  if (!user || !user.emailVerified) {
-    await generateVerificationToken(email, password);
-
+  if (!user) {
     return {
-      success: 'A verification link has been sent to your email!',
+      error: 'Invalid credentials!',
     };
   } else {
     try {
@@ -24,6 +21,10 @@ export const login = async (email: string, password: string, callbackUrl: string
         password,
         redirectTo: callbackUrl ?? DEFAULT_LOGIN_REDIRECT,
       });
+
+      return {
+        success: 'You have been successfully logged in!',
+      };
     } catch (error) {
       if (error instanceof AuthError) {
         switch (error.type) {

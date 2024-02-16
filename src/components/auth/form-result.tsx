@@ -1,3 +1,4 @@
+import { cn } from '@/lib/utils';
 import CheckIcon from '../ui/check-icon';
 import CrossIcon from '../ui/cross-icon';
 import Loader from '../ui/loader';
@@ -14,19 +15,18 @@ const FormResult = ({ message, state }: FormResult) => {
   }
 
   if (state === FormState.LOADING) {
-    return <Loader />;
+    return (
+      <div className="flex items-center justify-center">
+        <Loader />
+      </div>
+    );
   }
 
-  const color = FormState.SUCCESS ? '#389ABB' : '#979ce7';
-  const icon = FormState.SUCCESS ? <CheckIcon color={color} /> : <CrossIcon color={color} />;
+  const icon =
+    state === FormState.SUCCESS ? <CheckIcon className="stroke-success-foreground" /> : <CrossIcon className="stroke-error-foreground" />;
 
   return (
-    <div
-      style={{
-        backgroundColor: FormState.SUCCESS ? 'hsl(160 95% 39% / 0.5)' : 'hsl(0 84.2% 60.2% / 0.5)',
-      }}
-      className="flex w-full gap-2 px-2 py-4 rounded-lg"
-    >
+    <div className={cn('flex w-full gap-2 px-2 py-4 rounded-lg', state === FormState.SUCCESS ? 'bg-success' : 'bg-error')}>
       <div>{icon}</div>
       <p>{message}</p>
     </div>
