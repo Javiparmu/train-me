@@ -26,11 +26,6 @@ export const {
       if (!user?.email) return false;
       if (account?.provider !== 'credentials') return true;
 
-      const trainerFinder = new TrainerFinder(new MongoTrainerRepository());
-      const foundTrainer = await trainerFinder.run(user.email);
-
-      if (!foundTrainer?.emailVerified) return false;
-
       return true;
     },
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -51,7 +46,6 @@ export const {
 
         if (foundTrainer) {
           token.id = foundTrainer.id.value;
-          token.plan = foundTrainer.plan?.value;
         }
       }
 

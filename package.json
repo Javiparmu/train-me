@@ -20,7 +20,6 @@
     "react-dom": "^18",
     "resend": "^3.1.0",
     "sonner": "^1.4.0",
-    "stripe": "^14.15.0",
     "uuid-validate": "^0.0.3"
   },
   "devDependencies": {

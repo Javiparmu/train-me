@@ -14,7 +14,6 @@ type ProviderType = 'oidc' | 'oauth' | 'email' | 'credentials';
 interface AdapterTrainer extends User {
   id: string;
   email: string;
-  emailVerified: Date | null;
 }
 
 interface AdapterAccount extends Account {
@@ -70,10 +69,10 @@ declare module 'next-auth/adapters' {
 
 export function MongooseAdapter(): Adapter {
   return {
-    async createTrainer({ id, email, emailVerified }) {
+    async createTrainer({ id, email }) {
       await MongooseConnection.connect();
 
-      console.log('Creating trainer', id, email, emailVerified);
+      console.log('Creating trainer', id, email);
 
       const trainerId = randomUUID();
 
@@ -81,13 +80,11 @@ export function MongooseAdapter(): Adapter {
       await trainerCreator.run({
         id: trainerId,
         email,
-        emailVerified: emailVerified ? emailVerified.getTime() : undefined,
       });
 
       return {
         id: trainerId,
         email,
-        emailVerified: emailVerified,
       };
     },
     async getTrainer(id) {
@@ -101,7 +98,6 @@ export function MongooseAdapter(): Adapter {
       return {
         id: trainer.id.value,
         email: trainer.email?.value ?? '',
-        emailVerified: new Date(trainer.emailVerified?.value ?? 0),
       };
     },
     async getTrainerByEmail(email) {
@@ -115,7 +111,6 @@ export function MongooseAdapter(): Adapter {
       return {
         id: trainer.id.value,
         email: trainer.email?.value ?? '',
-        emailVerified: new Date(trainer.emailVerified?.value ?? 0),
       };
     },
     async getTrainerByAccount(data) {
@@ -129,7 +124,6 @@ export function MongooseAdapter(): Adapter {
       return {
         id: trainer.id.value,
         email: trainer.email?.value ?? '',
-        emailVerified: new Date(trainer.emailVerified?.value ?? 0),
       };
     },
     async updateTrainer(data) {
@@ -139,13 +133,11 @@ export function MongooseAdapter(): Adapter {
       await trainerCreator.run({
         id: data.id,
         email: data.email,
-        emailVerified: data.emailVerified?.getTime(),
       });
 
       return {
         id: data.id,
         email: data.email ?? '',
-        emailVerified: new Date(data.emailVerified ?? 0),
       };
     },
     async deleteTrainer(id) {
@@ -161,7 +153,6 @@ export function MongooseAdapter(): Adapter {
       await trainerCreator.run({
         id: data.trainerId,
         email: data.email?.toString(),
-        emailVerified: new Date().getTime(),
         authProvider: data.provider as AuthProvider,
         providerAccountId: data.providerAccountId,
       });
@@ -179,7 +170,6 @@ export function MongooseAdapter(): Adapter {
         trainer: {
           id: trainer?.id.value ?? '',
           email: trainer?.email?.value ?? '',
-          emailVerified: new Date(trainer?.emailVerified?.value ?? 0),
         },
         session: {
           sessionToken,
