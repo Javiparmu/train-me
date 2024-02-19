@@ -1,9 +1,9 @@
 import { MongooseConnection } from '@/modules/Shared/infrastructure/persistence/MongooseConnection';
-import { UserCreator } from '@/modules/User/application/UserCreator';
-import { UserDeleter } from '@/modules/User/application/UserDeleter';
-import { UserFinder } from '@/modules/User/application/UserFinder';
-import { AuthProvider } from '@/modules/User/domain/value-object/UserAuthProvider';
-import { MongoUserRepository } from '@/modules/User/infrastructure/persistence/MongoUserRepository';
+import { TrainerCreator } from '@/modules/Trainer/application/TrainerCreator';
+import { TrainerDeleter } from '@/modules/Trainer/application/TrainerDeleter';
+import { TrainerFinder } from '@/modules/Trainer/application/TrainerFinder';
+import { AuthProvider } from '@/modules/Trainer/domain/value-object/TrainerAuthProvider';
+import { MongoTrainerRepository } from '@/modules/Trainer/infrastructure/persistence/MongoTrainerRepository';
 import { Account, User } from 'next-auth';
 import { randomUUID } from 'crypto';
 
@@ -14,7 +14,6 @@ type ProviderType = 'oidc' | 'oauth' | 'email' | 'credentials';
 interface AdapterUser extends User {
   id: string;
   email: string;
-  emailVerified: Date | null;
 }
 
 interface AdapterAccount extends Account {
@@ -70,98 +69,90 @@ declare module 'next-auth/adapters' {
 
 export function MongooseAdapter(): Adapter {
   return {
-    async createUser({ id, email, emailVerified }) {
+    async createUser({ id, email }) {
       await MongooseConnection.connect();
 
-      console.log('Creating user', id, email, emailVerified);
+      console.log('Creating trainer', id, email);
 
-      const userId = randomUUID();
+      const trainerId = randomUUID();
 
-      const userCreator = new UserCreator(new MongoUserRepository());
-      await userCreator.run({
-        id: userId,
+      const trainerCreator = new TrainerCreator(new MongoTrainerRepository());
+      await trainerCreator.run({
+        id: trainerId,
         email,
-        emailVerified: emailVerified ? emailVerified.getTime() : undefined,
       });
 
       return {
-        id: userId,
+        id: trainerId,
         email,
-        emailVerified: emailVerified,
       };
     },
     async getUser(id) {
       await MongooseConnection.connect();
 
-      const userFinder = new UserFinder(new MongoUserRepository());
-      const user = await userFinder.runById(id);
+      const trainerFinder = new TrainerFinder(new MongoTrainerRepository());
+      const trainer = await trainerFinder.runById(id);
 
-      if (!user) return null;
+      if (!trainer) return null;
 
       return {
-        id: user.id.value,
-        email: user.email?.value ?? '',
-        emailVerified: new Date(user.emailVerified?.value ?? 0),
+        id: trainer.id.value,
+        email: trainer.email?.value ?? '',
       };
     },
     async getUserByEmail(email) {
       await MongooseConnection.connect();
 
-      const userFinder = new UserFinder(new MongoUserRepository());
-      const user = await userFinder.run(email);
+      const trainerFinder = new TrainerFinder(new MongoTrainerRepository());
+      const trainer = await trainerFinder.run(email);
 
-      if (!user) return null;
+      if (!trainer) return null;
 
       return {
-        id: user.id.value,
-        email: user.email?.value ?? '',
-        emailVerified: new Date(user.emailVerified?.value ?? 0),
+        id: trainer.id.value,
+        email: trainer.email?.value ?? '',
       };
     },
     async getUserByAccount(data) {
       await MongooseConnection.connect();
 
-      const userFinder = new UserFinder(new MongoUserRepository());
-      const user = await userFinder.runByProviderAccountId(data.providerAccountId);
+      const trainerFinder = new TrainerFinder(new MongoTrainerRepository());
+      const trainer = await trainerFinder.runByProviderAccountId(data.providerAccountId);
 
-      if (!user) return null;
+      if (!trainer) return null;
 
       return {
-        id: user.id.value,
-        email: user.email?.value ?? '',
-        emailVerified: new Date(user.emailVerified?.value ?? 0),
+        id: trainer.id.value,
+        email: trainer.email?.value ?? '',
       };
     },
     async updateUser(data) {
       await MongooseConnection.connect();
 
-      const userCreator = new UserCreator(new MongoUserRepository());
-      await userCreator.run({
+      const trainerCreator = new TrainerCreator(new MongoTrainerRepository());
+      await trainerCreator.run({
         id: data.id,
         email: data.email,
-        emailVerified: data.emailVerified?.getTime(),
       });
 
       return {
         id: data.id,
         email: data.email ?? '',
-        emailVerified: new Date(data.emailVerified ?? 0),
       };
     },
     async deleteUser(id) {
       await MongooseConnection.connect();
 
-      const userCreator = new UserDeleter(new MongoUserRepository());
-      await userCreator.run(id);
+      const trainerCreator = new TrainerDeleter(new MongoTrainerRepository());
+      await trainerCreator.run(id);
     },
     linkAccount: async (data) => {
       await MongooseConnection.connect();
 
-      const userCreator = new UserCreator(new MongoUserRepository());
-      await userCreator.run({
+      const trainerCreator = new TrainerCreator(new MongoTrainerRepository());
+      await trainerCreator.run({
         id: data.userId,
         email: data.email?.toString(),
-        emailVerified: new Date().getTime(),
         authProvider: data.provider as AuthProvider,
         providerAccountId: data.providerAccountId,
       });
@@ -172,18 +163,17 @@ export function MongooseAdapter(): Adapter {
     async getSessionAndUser(sessionToken) {
       await MongooseConnection.connect();
 
-      const userFinder = new UserFinder(new MongoUserRepository());
-      const user = await userFinder.runById(sessionToken);
+      const trainerFinder = new TrainerFinder(new MongoTrainerRepository());
+      const trainer = await trainerFinder.runById(sessionToken);
 
       return {
         user: {
-          id: user?.id.value ?? '',
-          email: user?.email?.value ?? '',
-          emailVerified: new Date(user?.emailVerified?.value ?? 0),
+          id: trainer?.id.value ?? '',
+          email: trainer?.email?.value ?? '',
         },
         session: {
           sessionToken,
-          userId: user?.id.value ?? '',
+          userId: trainer?.id.value ?? '',
           expires: new Date(),
         },
       };

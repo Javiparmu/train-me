@@ -2,15 +2,15 @@
 
 import { signIn } from '@/lib';
 import { AuthError } from 'next-auth';
-import { UserFinder } from '@/modules/User/application/UserFinder';
-import { MongoUserRepository } from '@/modules/User/infrastructure/persistence/MongoUserRepository';
+import { TrainerFinder } from '@/modules/Trainer/application/TrainerFinder';
+import { MongoTrainerRepository } from '@/modules/Trainer/infrastructure/persistence/MongoTrainerRepository';
 import { DEFAULT_LOGIN_REDIRECT } from '../routes';
 
 export const login = async (email: string, password: string, callbackUrl: string | null) => {
-  const userFinder = new UserFinder(new MongoUserRepository());
-  const user = await userFinder.run(email);
+  const trainerFinder = new TrainerFinder(new MongoTrainerRepository());
+  const trainer = await trainerFinder.run(email);
 
-  if (!user) {
+  if (!trainer) {
     return {
       error: 'Invalid credentials!',
     };

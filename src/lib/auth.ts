@@ -1,5 +1,5 @@
-import { UserFinder } from '@/modules/User/application/UserFinder';
-import { MongoUserRepository } from '@/modules/User/infrastructure/persistence/MongoUserRepository';
+import { TrainerFinder } from '@/modules/Trainer/application/TrainerFinder';
+import { MongoTrainerRepository } from '@/modules/Trainer/infrastructure/persistence/MongoTrainerRepository';
 import NextAuth from 'next-auth';
 import { MongooseAdapter } from '../app/adapters/mongoose-adapter';
 import authConfig from './auth.config';
@@ -26,18 +26,13 @@ export const {
       if (!user?.email) return false;
       if (account?.provider !== 'credentials') return true;
 
-      const userFinder = new UserFinder(new MongoUserRepository());
-      const foundUser = await userFinder.run(user.email);
-
-      if (!foundUser?.emailVerified) return false;
-
       return true;
     },
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     async session({ session, token }: any) {
-      if (token && session.user) {
-        session.user.userId = token.id as string;
-        session.user.plan = token.plan as string;
+      if (token && session.trainer) {
+        session.trainer.trainerId = token.id as string;
+        session.trainer.plan = token.plan as string;
       }
 
       return session;
@@ -46,12 +41,11 @@ export const {
       if (user) {
         token.id = user.id;
       } else if (token) {
-        const userFinder = new UserFinder(new MongoUserRepository());
-        const foundUser = await userFinder.run(token.email!);
+        const trainerFinder = new TrainerFinder(new MongoTrainerRepository());
+        const foundTrainer = await trainerFinder.run(token.email!);
 
-        if (foundUser) {
-          token.id = foundUser.id.value;
-          token.plan = foundUser.plan?.value;
+        if (foundTrainer) {
+          token.id = foundTrainer.id.value;
         }
       }
 

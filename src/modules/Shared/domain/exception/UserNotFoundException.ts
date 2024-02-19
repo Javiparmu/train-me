@@ -1,7 +1,7 @@
 import { CustomException } from './CustomException';
 
-export class UserNotFoundException extends CustomException {
+export class TrainerNotFoundException extends CustomException {
   constructor() {
-    super('User not found', 404);
+    super('Trainer not found', 404);
   }
 }
