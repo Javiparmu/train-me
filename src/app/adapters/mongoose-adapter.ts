@@ -11,19 +11,19 @@ type Awaitable<T> = T | PromiseLike<T>;
 
 type ProviderType = 'oidc' | 'oauth' | 'email' | 'credentials';
 
-interface AdapterTrainer extends User {
+interface AdapterUser extends User {
   id: string;
   email: string;
 }
 
 interface AdapterAccount extends Account {
-  trainerId: string;
+  userId: string;
   type: Extract<ProviderType, 'oauth' | 'oidc' | 'email'>;
 }
 
 interface AdapterSession {
   sessionToken: string;
-  trainerId: string;
+  userId: string;
   expires: Date;
 }
 
@@ -34,18 +34,18 @@ interface VerificationToken {
 }
 
 interface Adapter {
-  createTrainer?(trainer: AdapterTrainer): Awaitable<AdapterTrainer>;
-  getTrainer?(id: string): Awaitable<AdapterTrainer | null>;
-  getTrainerByEmail?(email: string): Awaitable<AdapterTrainer | null>;
-  getTrainerByAccount?(providerAccountId: Pick<AdapterAccount, 'provider' | 'providerAccountId'>): Awaitable<AdapterTrainer | null>;
-  updateTrainer?(trainer: Partial<AdapterTrainer> & Pick<AdapterTrainer, 'id'>): Awaitable<AdapterTrainer>;
-  deleteTrainer?(trainerId: string): Promise<void> | Awaitable<AdapterTrainer | null | undefined>;
+  createUser?(user: AdapterUser): Awaitable<AdapterUser>;
+  getUser?(id: string): Awaitable<AdapterUser | null>;
+  getUserByEmail?(email: string): Awaitable<AdapterUser | null>;
+  getUserByAccount?(providerAccountId: Pick<AdapterAccount, 'provider' | 'providerAccountId'>): Awaitable<AdapterUser | null>;
+  updateUser?(user: Partial<AdapterUser> & Pick<AdapterUser, 'id'>): Awaitable<AdapterUser>;
+  deleteUser?(userId: string): Promise<void> | Awaitable<AdapterUser | null | undefined>;
   linkAccount?(account: AdapterAccount): Promise<void> | Awaitable<AdapterAccount | null | undefined>;
   unlinkAccount?(
     providerAccountId: Pick<AdapterAccount, 'provider' | 'providerAccountId'>,
   ): Promise<void> | Awaitable<AdapterAccount | undefined>;
-  createSession?(session: { sessionToken: string; trainerId: string; expires: Date }): Awaitable<AdapterSession>;
-  getSessionAndTrainer?(sessionToken: string): Awaitable<{ session: AdapterSession; trainer: AdapterTrainer } | null>;
+  createSession?(session: { sessionToken: string; userId: string; expires: Date }): Awaitable<AdapterSession>;
+  getSessionAndUser?(sessionToken: string): Awaitable<{ session: AdapterSession; user: AdapterUser } | null>;
   updateSession?(session: Partial<AdapterSession> & Pick<AdapterSession, 'sessionToken'>): Awaitable<AdapterSession | null | undefined>;
   deleteSession?(sessionToken: string): Promise<void> | Awaitable<AdapterSession | null | undefined>;
   createVerificationToken?(verificationToken: VerificationToken): Awaitable<VerificationToken | null | undefined>;
@@ -69,7 +69,7 @@ declare module 'next-auth/adapters' {
 
 export function MongooseAdapter(): Adapter {
   return {
-    async createTrainer({ id, email }) {
+    async createUser({ id, email }) {
       await MongooseConnection.connect();
 
       console.log('Creating trainer', id, email);
@@ -87,7 +87,7 @@ export function MongooseAdapter(): Adapter {
         email,
       };
     },
-    async getTrainer(id) {
+    async getUser(id) {
       await MongooseConnection.connect();
 
       const trainerFinder = new TrainerFinder(new MongoTrainerRepository());
@@ -100,7 +100,7 @@ export function MongooseAdapter(): Adapter {
         email: trainer.email?.value ?? '',
       };
     },
-    async getTrainerByEmail(email) {
+    async getUserByEmail(email) {
       await MongooseConnection.connect();
 
       const trainerFinder = new TrainerFinder(new MongoTrainerRepository());
@@ -113,7 +113,7 @@ export function MongooseAdapter(): Adapter {
         email: trainer.email?.value ?? '',
       };
     },
-    async getTrainerByAccount(data) {
+    async getUserByAccount(data) {
       await MongooseConnection.connect();
 
       const trainerFinder = new TrainerFinder(new MongoTrainerRepository());
@@ -126,7 +126,7 @@ export function MongooseAdapter(): Adapter {
         email: trainer.email?.value ?? '',
       };
     },
-    async updateTrainer(data) {
+    async updateUser(data) {
       await MongooseConnection.connect();
 
       const trainerCreator = new TrainerCreator(new MongoTrainerRepository());
@@ -140,7 +140,7 @@ export function MongooseAdapter(): Adapter {
         email: data.email ?? '',
       };
     },
-    async deleteTrainer(id) {
+    async deleteUser(id) {
       await MongooseConnection.connect();
 
       const trainerCreator = new TrainerDeleter(new MongoTrainerRepository());
@@ -151,7 +151,7 @@ export function MongooseAdapter(): Adapter {
 
       const trainerCreator = new TrainerCreator(new MongoTrainerRepository());
       await trainerCreator.run({
-        id: data.trainerId,
+        id: data.userId,
         email: data.email?.toString(),
         authProvider: data.provider as AuthProvider,
         providerAccountId: data.providerAccountId,
@@ -160,20 +160,20 @@ export function MongooseAdapter(): Adapter {
     async unlinkAccount() {
       return;
     },
-    async getSessionAndTrainer(sessionToken) {
+    async getSessionAndUser(sessionToken) {
       await MongooseConnection.connect();
 
       const trainerFinder = new TrainerFinder(new MongoTrainerRepository());
       const trainer = await trainerFinder.runById(sessionToken);
 
       return {
-        trainer: {
+        user: {
           id: trainer?.id.value ?? '',
           email: trainer?.email?.value ?? '',
         },
         session: {
           sessionToken,
-          trainerId: trainer?.id.value ?? '',
+          userId: trainer?.id.value ?? '',
           expires: new Date(),
         },
       };
