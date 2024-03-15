@@ -18,8 +18,6 @@ export class UserCreator {
       password: password ? new UserPassword(password) : undefined,
     });
 
-    console.log('UserCreator -> run -> user', user);
-
     await this.repository.save(user);
   }
 }

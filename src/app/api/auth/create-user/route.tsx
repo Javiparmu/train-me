@@ -8,14 +8,11 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
   const body = await req.json();
   const { email, password } = body;
 
-  console.log('POST -> body', body);
-
   if (!email || !password) {
     return new NextResponse('Invalid credentials', { status: 400 });
   }
 
   const hashedPassword = await hash(password, 10);
-  console.log('POST -> hashedPassword', hashedPassword);
 
   try {
     const userCreator = new UserCreator(new MongoUserRepository());
