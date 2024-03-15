@@ -7,7 +7,13 @@ export function HeroSection() {
       <div className="mx-56 px-4 md:px-6">
         <div className="grid grid-cols-2 gap-6">
           <figure className="flex justify-end lg:order-last">
-            <Image alt="Hero Image" className="overflow-hidden sm:w-[450px]" src="/images/hero-image.png" width={3863} height={2578} />
+            <Image
+              alt="Hero Image"
+              className="overflow-hidden sm:w-[450px]"
+              src="/images/hero-image.png"
+              width={3863}
+              height={2578}
+            />
           </figure>
           <div className="flex flex-col justify-center space-y-8">
             <div className="space-y-6">

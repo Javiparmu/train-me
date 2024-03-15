@@ -1,10 +1,10 @@
 'use server';
 
-import { signIn } from '@/lib';
 import { AuthError } from 'next-auth';
 import { UserFinder } from '@/modules/User/application/UserFinder';
 import { MongoUserRepository } from '@/modules/User/infrastructure/persistence/MongoUserRepository';
 import { DEFAULT_LOGIN_REDIRECT } from '../routes';
+import { signIn } from '@/lib/auth';
 
 export const login = async (email: string, password: string, callbackUrl: string | null) => {
   const userFinder = new UserFinder(new MongoUserRepository());

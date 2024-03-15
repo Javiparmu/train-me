@@ -1,7 +1,6 @@
 import { UserFinder } from '@/modules/User/application/UserFinder';
 import { MongoUserRepository } from '@/modules/User/infrastructure/persistence/MongoUserRepository';
 import NextAuth from 'next-auth';
-import { MongooseAdapter } from '../app/adapters/mongoose-adapter';
 import authConfig from './auth.config';
 
 export const {
@@ -22,14 +21,8 @@ export const {
     error: '/auth/error',
   },
   callbacks: {
-    async signIn({ user, account }) {
+    async signIn({ user }) {
       if (!user?.email) return false;
-      if (account?.provider !== 'credentials') return true;
-
-      const userFinder = new UserFinder(new MongoUserRepository());
-      const foundUser = await userFinder.run(user.email);
-
-      if (!foundUser?.emailVerified) return false;
 
       return true;
     },
@@ -37,7 +30,6 @@ export const {
     async session({ session, token }: any) {
       if (token && session.user) {
         session.user.userId = token.id as string;
-        session.user.plan = token.plan as string;
       }
 
       return session;
@@ -51,12 +43,10 @@ export const {
 
         if (foundUser) {
           token.id = foundUser.id.value;
-          token.plan = foundUser.plan?.value;
         }
       }
 
       return token;
     },
   },
-  adapter: MongooseAdapter(),
 });

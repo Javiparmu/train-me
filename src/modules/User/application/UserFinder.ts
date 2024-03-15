@@ -17,8 +17,4 @@ export class UserFinder {
   async runById(id: string): Promise<User | null> {
     return this.repository.search(new UserId(id));
   }
-
-  async runByProviderAccountId(providerAccountId: string): Promise<User | null> {
-    return this.repository.searchByProviderAccountId(providerAccountId);
-  }
 }

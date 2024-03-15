@@ -13,7 +13,6 @@ export class MongooseConnection {
       });
 
       connection.on('disconnected', () => {
-        console.log('Mongoose connection disconnected. Attempting to reconnect...');
         MongooseConnection.attemptReconnect(config);
       });
     }
