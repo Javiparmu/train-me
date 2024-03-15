@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { FormState } from '../utils';
+import { FormState } from '../utils/enums';
 
 export const useFormState = (initialState = FormState.INITIAL) => {
   const [state, setState] = useState(initialState);

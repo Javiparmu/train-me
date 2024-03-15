@@ -10,6 +10,7 @@ export class MongoRepository<T extends AggregateRoot> {
     await MongooseConnection.connect({ url: process.env.MONGODB_URI ?? '' });
 
     const document = { ...aggregateRoot, _id: id };
+    console.log('MongoRepository -> persist -> document', document);
     await this.model.updateOne({ _id: id }, { $set: document }, { upsert: true, strict: true });
   }
 }

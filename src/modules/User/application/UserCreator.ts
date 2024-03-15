@@ -3,9 +3,6 @@ import { UserId } from '../domain/value-object/UserId';
 import { UserEmail } from '../domain/value-object/UserEmail';
 import { UserPassword } from '../domain/value-object/UserPassword';
 import { User } from '../domain/User';
-import { AuthProvider, UserAuthProvider } from '../domain/value-object/UserAuthProvider';
-import { InvalidRequestException } from '@/modules/Shared/domain/exception/InvalidRequestException';
-import { UnixDate } from '@/modules/Shared/domain/value-object/UnixDate';
 
 export class UserCreator {
   private repository: UserRepository;
@@ -14,36 +11,14 @@ export class UserCreator {
     this.repository = repository;
   }
 
-  async run({
-    id,
-    email,
-    emailVerified,
-    password,
-    authProvider,
-    providerAccountId,
-    customerId,
-  }: {
-    id: string;
-    email?: string;
-    emailVerified?: number;
-    password?: string;
-    authProvider?: AuthProvider;
-    providerAccountId?: string;
-    customerId?: string;
-  }): Promise<void> {
-    if (authProvider === 'credentials' && !password) {
-      throw new InvalidRequestException('Password is required');
-    }
-
+  async run({ id, email, password }: { id: string; email?: string; password?: string }): Promise<void> {
     const user = new User({
       id: new UserId(id),
       email: email ? new UserEmail(email) : undefined,
-      emailVerified: emailVerified ? new UnixDate(emailVerified) : undefined,
       password: password ? new UserPassword(password) : undefined,
-      authProvider: authProvider ? new UserAuthProvider(authProvider) : undefined,
-      providerAccountId: providerAccountId ?? undefined,
-      customerId: customerId ? new UserId(customerId) : undefined,
     });
+
+    console.log('UserCreator -> run -> user', user);
 
     await this.repository.save(user);
   }

@@ -2,7 +2,6 @@ import { MongooseConnection } from '@/modules/Shared/infrastructure/persistence/
 import { UserCreator } from '@/modules/User/application/UserCreator';
 import { UserDeleter } from '@/modules/User/application/UserDeleter';
 import { UserFinder } from '@/modules/User/application/UserFinder';
-import { AuthProvider } from '@/modules/User/domain/value-object/UserAuthProvider';
 import { MongoUserRepository } from '@/modules/User/infrastructure/persistence/MongoUserRepository';
 import { Account, User } from 'next-auth';
 import { randomUUID } from 'crypto';
@@ -14,7 +13,6 @@ type ProviderType = 'oidc' | 'oauth' | 'email' | 'credentials';
 interface AdapterUser extends User {
   id: string;
   email: string;
-  emailVerified: Date | null;
 }
 
 interface AdapterAccount extends Account {
@@ -28,17 +26,13 @@ interface AdapterSession {
   expires: Date;
 }
 
-interface VerificationToken {
-  identifier: string;
-  expires: Date;
-  token: string;
-}
-
 interface Adapter {
   createUser?(user: AdapterUser): Awaitable<AdapterUser>;
   getUser?(id: string): Awaitable<AdapterUser | null>;
   getUserByEmail?(email: string): Awaitable<AdapterUser | null>;
-  getUserByAccount?(providerAccountId: Pick<AdapterAccount, 'provider' | 'providerAccountId'>): Awaitable<AdapterUser | null>;
+  getUserByAccount?(
+    providerAccountId: Pick<AdapterAccount, 'provider' | 'providerAccountId'>,
+  ): Awaitable<AdapterUser | null>;
   updateUser?(user: Partial<AdapterUser> & Pick<AdapterUser, 'id'>): Awaitable<AdapterUser>;
   deleteUser?(userId: string): Promise<void> | Awaitable<AdapterUser | null | undefined>;
   linkAccount?(account: AdapterAccount): Promise<void> | Awaitable<AdapterAccount | null | undefined>;
@@ -47,10 +41,10 @@ interface Adapter {
   ): Promise<void> | Awaitable<AdapterAccount | undefined>;
   createSession?(session: { sessionToken: string; userId: string; expires: Date }): Awaitable<AdapterSession>;
   getSessionAndUser?(sessionToken: string): Awaitable<{ session: AdapterSession; user: AdapterUser } | null>;
-  updateSession?(session: Partial<AdapterSession> & Pick<AdapterSession, 'sessionToken'>): Awaitable<AdapterSession | null | undefined>;
+  updateSession?(
+    session: Partial<AdapterSession> & Pick<AdapterSession, 'sessionToken'>,
+  ): Awaitable<AdapterSession | null | undefined>;
   deleteSession?(sessionToken: string): Promise<void> | Awaitable<AdapterSession | null | undefined>;
-  createVerificationToken?(verificationToken: VerificationToken): Awaitable<VerificationToken | null | undefined>;
-  useVerificationToken?(params: { identifier: string; token: string }): Awaitable<VerificationToken | null>;
 }
 
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -70,10 +64,8 @@ declare module 'next-auth/adapters' {
 
 export function MongooseAdapter(): Adapter {
   return {
-    async createUser({ id, email, emailVerified }) {
+    async createUser({ email }) {
       await MongooseConnection.connect();
-
-      console.log('Creating user', id, email, emailVerified);
 
       const userId = randomUUID();
 
@@ -81,13 +73,11 @@ export function MongooseAdapter(): Adapter {
       await userCreator.run({
         id: userId,
         email,
-        emailVerified: emailVerified ? emailVerified.getTime() : undefined,
       });
 
       return {
         id: userId,
         email,
-        emailVerified: emailVerified,
       };
     },
     async getUser(id) {
@@ -101,7 +91,6 @@ export function MongooseAdapter(): Adapter {
       return {
         id: user.id.value,
         email: user.email?.value ?? '',
-        emailVerified: new Date(user.emailVerified?.value ?? 0),
       };
     },
     async getUserByEmail(email) {
@@ -115,21 +104,6 @@ export function MongooseAdapter(): Adapter {
       return {
         id: user.id.value,
         email: user.email?.value ?? '',
-        emailVerified: new Date(user.emailVerified?.value ?? 0),
-      };
-    },
-    async getUserByAccount(data) {
-      await MongooseConnection.connect();
-
-      const userFinder = new UserFinder(new MongoUserRepository());
-      const user = await userFinder.runByProviderAccountId(data.providerAccountId);
-
-      if (!user) return null;
-
-      return {
-        id: user.id.value,
-        email: user.email?.value ?? '',
-        emailVerified: new Date(user.emailVerified?.value ?? 0),
       };
     },
     async updateUser(data) {
@@ -139,13 +113,11 @@ export function MongooseAdapter(): Adapter {
       await userCreator.run({
         id: data.id,
         email: data.email,
-        emailVerified: data.emailVerified?.getTime(),
       });
 
       return {
         id: data.id,
         email: data.email ?? '',
-        emailVerified: new Date(data.emailVerified ?? 0),
       };
     },
     async deleteUser(id) {
@@ -161,9 +133,6 @@ export function MongooseAdapter(): Adapter {
       await userCreator.run({
         id: data.userId,
         email: data.email?.toString(),
-        emailVerified: new Date().getTime(),
-        authProvider: data.provider as AuthProvider,
-        providerAccountId: data.providerAccountId,
       });
     },
     async unlinkAccount() {
@@ -179,7 +148,6 @@ export function MongooseAdapter(): Adapter {
         user: {
           id: user?.id.value ?? '',
           email: user?.email?.value ?? '',
-          emailVerified: new Date(user?.emailVerified?.value ?? 0),
         },
         session: {
           sessionToken,
