@@ -3,9 +3,9 @@ import React from 'react';
 
 const AdminPage = () => {
   return (
-    <div>
+    <main>
       <Dashboard />
-    </div>
+    </main>
   );
 };
 

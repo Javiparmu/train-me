@@ -12,6 +12,7 @@ import {
 import { TableHead, TableRow, TableHeader, TableCell, TableBody, Table } from '@/components/ui/table';
 import { SVGAttributes } from 'react';
 
+// This is a template dashboard page generated with VO from vercel, not a real dashboard page.
 export function Dashboard() {
   return (
     <div className="grid min-h-screen w-full lg:grid-cols-[280px_1fr]">
