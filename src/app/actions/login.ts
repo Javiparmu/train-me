@@ -2,12 +2,13 @@
 
 import { AuthError } from 'next-auth';
 import { UserFinder } from '@/modules/User/application/UserFinder';
-import { MongoUserRepository } from '@/modules/User/infrastructure/persistence/MongoUserRepository';
 import { DEFAULT_LOGIN_REDIRECT } from '../routes';
-import { signIn } from '@/lib/auth';
+import { signIn } from '@/app/lib/auth';
+import { container } from '@/dependency-injection/inversify.config';
+import { TYPES } from '@/dependency-injection/types';
 
 export const login = async (email: string, password: string, callbackUrl: string | null) => {
-  const userFinder = new UserFinder(new MongoUserRepository());
+  const userFinder = container.get<UserFinder>(TYPES.UserFinder);
   const user = await userFinder.run(email);
 
   if (!user) {

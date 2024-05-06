@@ -1,12 +1,14 @@
 import { connection, connect, disconnect } from 'mongoose';
 import MongoConfig from './MongoConfig';
 import { TooManyConnectionAttemptsException } from '../../domain/exception/TooManyConnectionAttemptsException';
+import { injectable } from 'inversify';
 
 const MAX_ATTEMPTS = 5;
 const RETRY_INTERVAL = 5000;
 
+@injectable()
 export class MongooseConnection {
-  static async connect(config?: MongoConfig): Promise<void> {
+  public async connect(config?: MongoConfig): Promise<void> {
     if (connection?.readyState === 0) {
       await connect(config?.url ?? process.env.MONGODB_URI ?? '', {
         ignoreUndefined: true,
@@ -16,6 +18,10 @@ export class MongooseConnection {
         MongooseConnection.attemptReconnect(config);
       });
     }
+  }
+
+  public async disconnect(): Promise<void> {
+    await disconnect();
   }
 
   private static async attemptReconnect(config?: MongoConfig, attempts = 0): Promise<void> {
@@ -34,9 +40,5 @@ export class MongooseConnection {
 
       throw new TooManyConnectionAttemptsException('mongodb');
     }
-  }
-
-  static async disconnect(): Promise<void> {
-    await disconnect();
   }
 }

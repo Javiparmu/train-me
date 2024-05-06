@@ -1,10 +1,10 @@
-import { MongooseConnection } from '@/modules/Shared/infrastructure/persistence/MongooseConnection';
 import { UserCreator } from '@/modules/User/application/UserCreator';
 import { UserDeleter } from '@/modules/User/application/UserDeleter';
 import { UserFinder } from '@/modules/User/application/UserFinder';
-import { MongoUserRepository } from '@/modules/User/infrastructure/persistence/MongoUserRepository';
 import { Account, User } from 'next-auth';
 import { randomUUID } from 'crypto';
+import { container } from '@/dependency-injection/inversify.config';
+import { TYPES } from '@/dependency-injection/types';
 
 type Awaitable<T> = T | PromiseLike<T>;
 
@@ -63,13 +63,14 @@ declare module 'next-auth/adapters' {
 }
 
 export function MongooseAdapter(): Adapter {
+  const userCreator = container.get<UserCreator>(TYPES.UserCreator);
+  const userFinder = container.get<UserFinder>(TYPES.UserFinder);
+  const userDeleter = container.get<UserDeleter>(TYPES.UserDeleter);
+
   return {
     async createUser({ email }) {
-      await MongooseConnection.connect();
-
       const userId = randomUUID();
 
-      const userCreator = new UserCreator(new MongoUserRepository());
       await userCreator.run({
         id: userId,
         email,
@@ -81,9 +82,6 @@ export function MongooseAdapter(): Adapter {
       };
     },
     async getUser(id) {
-      await MongooseConnection.connect();
-
-      const userFinder = new UserFinder(new MongoUserRepository());
       const user = await userFinder.runById(id);
 
       if (!user) return null;
@@ -94,9 +92,6 @@ export function MongooseAdapter(): Adapter {
       };
     },
     async getUserByEmail(email) {
-      await MongooseConnection.connect();
-
-      const userFinder = new UserFinder(new MongoUserRepository());
       const user = await userFinder.run(email);
 
       if (!user) return null;
@@ -107,9 +102,6 @@ export function MongooseAdapter(): Adapter {
       };
     },
     async updateUser(data) {
-      await MongooseConnection.connect();
-
-      const userCreator = new UserCreator(new MongoUserRepository());
       await userCreator.run({
         id: data.id,
         email: data.email,
@@ -121,15 +113,9 @@ export function MongooseAdapter(): Adapter {
       };
     },
     async deleteUser(id) {
-      await MongooseConnection.connect();
-
-      const userCreator = new UserDeleter(new MongoUserRepository());
-      await userCreator.run(id);
+      await userDeleter.run(id);
     },
     linkAccount: async (data) => {
-      await MongooseConnection.connect();
-
-      const userCreator = new UserCreator(new MongoUserRepository());
       await userCreator.run({
         id: data.userId,
         email: data.email?.toString(),
@@ -139,9 +125,6 @@ export function MongooseAdapter(): Adapter {
       return;
     },
     async getSessionAndUser(sessionToken) {
-      await MongooseConnection.connect();
-
-      const userFinder = new UserFinder(new MongoUserRepository());
       const user = await userFinder.runById(sessionToken);
 
       return {

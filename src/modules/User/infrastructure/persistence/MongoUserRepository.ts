@@ -5,11 +5,12 @@ import UserModel from '@/modules/User/infrastructure/persistence/mongoose/User';
 import { UserId } from '../../domain/value-object/UserId';
 import { UserEmail } from '../../domain/value-object/UserEmail';
 import { UserDocument } from './mongoose/documents';
-import { MongooseConnection } from '@/modules/Shared/infrastructure/persistence/MongooseConnection';
+import { injectable } from 'inversify';
 
+@injectable()
 export class MongoUserRepository extends MongoRepository<User> implements UserRepository {
-  constructor() {
-    super(UserModel);
+  protected get model() {
+    return UserModel;
   }
 
   public async save(user: User): Promise<void> {
@@ -17,24 +18,24 @@ export class MongoUserRepository extends MongoRepository<User> implements UserRe
   }
 
   public async search(id: UserId): Promise<User | null> {
-    await MongooseConnection.connect();
+    await this.connection.connect();
 
-    const user = await UserModel.findById(id).lean<UserDocument>();
+    const user = await this.model.findById(id).lean<UserDocument>();
 
     return user ? User.fromPrimitives({ ...user, id: user._id }) : null;
   }
 
   public async searchByEmail(email: UserEmail): Promise<User | null> {
-    await MongooseConnection.connect();
+    await this.connection.connect();
 
-    const user = await UserModel.findOne({ email }).lean<UserDocument>();
+    const user = await this.model.findOne({ email }).lean<UserDocument>();
 
     return user ? User.fromPrimitives({ ...user, id: user._id }) : null;
   }
 
   public async delete(id: UserId): Promise<void> {
-    await MongooseConnection.connect();
+    await this.connection.connect();
 
-    await UserModel.findByIdAndDelete(id);
+    await this.model.findByIdAndDelete(id);
   }
 }

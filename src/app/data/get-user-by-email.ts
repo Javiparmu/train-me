@@ -1,7 +1,9 @@
+import { container } from '@/dependency-injection/inversify.config';
+import { TYPES } from '@/dependency-injection/types';
 import { UserFinder } from '@/modules/User/application/UserFinder';
-import { MongoUserRepository } from '@/modules/User/infrastructure/persistence/MongoUserRepository';
 
 export const getUserByEmail = async (email: string) => {
-  const userFinder = new UserFinder(new MongoUserRepository());
+  const userFinder = container.get<UserFinder>(TYPES.UserFinder);
+
   return userFinder.run(email);
 };
