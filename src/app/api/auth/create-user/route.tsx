@@ -1,5 +1,6 @@
+import { container } from '@/dependency-injection/inversify.config';
+import { TYPES } from '@/dependency-injection/types';
 import { UserCreator } from '@/modules/User/application/UserCreator';
-import { MongoUserRepository } from '@/modules/User/infrastructure/persistence/MongoUserRepository';
 import { hash } from 'bcryptjs';
 import { randomUUID } from 'crypto';
 import { NextRequest, NextResponse } from 'next/server';
@@ -15,7 +16,7 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
   const hashedPassword = await hash(password, 10);
 
   try {
-    const userCreator = new UserCreator(new MongoUserRepository());
+    const userCreator = container.get<UserCreator>(TYPES.UserCreator);
     await userCreator.run({
       id: randomUUID(),
       email,

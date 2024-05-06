@@ -1,7 +1,7 @@
 'use client';
 
 import { FormEvent, useEffect, useState } from 'react';
-import FormResult from '@/components/auth/form-result';
+import FormResult from '@/app/components/auth/form-result';
 import { login } from '@/app/actions/login';
 import { useSearchParams } from 'next/navigation';
 import { useFormState } from '@/app/hooks/use-form-state';

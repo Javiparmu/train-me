@@ -1,6 +1,6 @@
 import Link from 'next/link';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
+import { Button } from '@/app/components/ui/button';
+import { Input } from '@/app/components/ui/input';
 import {
   DropdownMenuTrigger,
   DropdownMenuLabel,
@@ -8,8 +8,8 @@ import {
   DropdownMenuItem,
   DropdownMenuContent,
   DropdownMenu,
-} from '@/components/ui/dropdown-menu';
-import { TableHead, TableRow, TableHeader, TableCell, TableBody, Table } from '@/components/ui/table';
+} from '@/app/components/ui/dropdown-menu';
+import { TableHead, TableRow, TableHeader, TableCell, TableBody, Table } from '@/app/components/ui/table';
 import { SVGAttributes } from 'react';
 
 // This is a template dashboard page generated with VO from vercel, not a real dashboard page.

@@ -1,4 +1,4 @@
-import { Dashboard } from '@/components/dashboard';
+import { Dashboard } from '@/app/components/dashboard';
 import React from 'react';
 
 const AdminPage = () => {

@@ -1,7 +1,7 @@
 import CredentialsProvider from 'next-auth/providers/credentials';
 import { InvalidRequestException } from '@/modules/Shared/domain/exception/InvalidRequestException';
 import { compare } from 'bcryptjs';
-import { getUserByEmail } from '../app/data/get-user-by-email';
+import { getUserByEmail } from '../data/get-user-by-email';
 
 const authConfig = {
   providers: [
